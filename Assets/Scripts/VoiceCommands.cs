@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.UIElements.StyleEnums;
+using System;
+using UnityEngine.Experimental.UIElements;
 
 public class VoiceCommands : MonoBehaviour {
 
 	enum MoveDirection {Forward, Backward, Left, Right, Up, Down};
 	enum RotationDirection {Left, Right, Up, Down};
+	enum ScaleSize {Larger, Smaller};
 	float speed = 0.1f;
 
 	// Use this for initialization
@@ -16,7 +19,9 @@ public class VoiceCommands : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		Rotate (RotationDirection.Up);
+//		Move (MoveDirection.Right);
+//		Rotate (RotationDirection.Up);
+		Scale (ScaleSize.Larger); 
 	}
 
 
@@ -37,7 +42,7 @@ public class VoiceCommands : MonoBehaviour {
 		} else if (dir == MoveDirection.Down) {
 			target = new Vector3 (0, -10, 0);
 		} else {
-			target = transform.position;
+			target = new Vector3 (0, 0, 0);;
 		}
 
 		transform.position = Vector3.MoveTowards(transform.position, transform.position + target, step);
@@ -45,38 +50,35 @@ public class VoiceCommands : MonoBehaviour {
 
 
 	void Rotate(RotationDirection dir) {
-		float step = speed * Time.deltaTime;
-		Quaternion delta;
+		float step = speed * 360 * Time.deltaTime;
 
 		if (dir == RotationDirection.Left) {
-			delta = new Quaternion (-90, 0, 0, 0);
+			transform.RotateAround (transform.position, Vector3.up, -step);
 		} else if (dir == RotationDirection.Right) {
-			delta = new Quaternion (90, 0, 0, 0);
+			transform.RotateAround (transform.position, Vector3.up, step);
 		} else if (dir == RotationDirection.Up) {
-			delta = new Quaternion (0, 90, 0, 0);
+			transform.RotateAround (transform.position, Vector3.right, step);
 		} else if (dir == RotationDirection.Down) {
-			delta = new Quaternion (0, -90, 0, 0);
-		} else {
-			delta = transform.rotation;
+			transform.RotateAround (transform.position, Vector3.right, -step);
 		}
-		Transform target = transform;
-		target.rotation[0] = transform.rotation [0] + delta [0];
-		target.rotation[1] = transform.rotation [1] + delta [1];
-		target.rotation[2] = transform.rotation [2] + delta [2];
-		target.rotation[3] = transform.rotation [3] + delta [3];
-
-		transform.rotation = Quaternion.RotateTowards (transform.rotation, target.rotation + target, step);
 	}
 
-	void Scale(bool larger) {
+	void Scale(ScaleSize size) {
 		float step = speed * Time.deltaTime;
 		Vector3 target;
 
-		if (larger) {
-			
+		if (size == ScaleSize.Larger) {
+			var growthFactor = transform.localScale [0] * 1.5f;
+			target = new Vector3 (growthFactor, growthFactor, growthFactor);
+		} else if (size == ScaleSize.Smaller) {
+			var shrinkFactor = -1 * transform.localScale [0] * 0.5f;
+			target = new Vector3 (shrinkFactor, shrinkFactor, shrinkFactor);
 		} else {
-
+			target = new Vector3 (0, 0, 0);
 		}
+
+
+		transform.localScale = Vector3.MoveTowards (transform.localScale, transform.localScale + target, step);
 	}
 
 	void UpdateSpeed(bool faster) {
