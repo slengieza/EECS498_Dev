@@ -21,7 +21,7 @@ public class VoiceCommands : MonoBehaviour {
 	void Update () {
 //		Move (MoveDirection.Right);
 //		Rotate (RotationDirection.Up);
-		Scale (ScaleSize.Larger); 
+//		Scale (ScaleSize.Larger); 
 	}
 
 
@@ -87,5 +87,12 @@ public class VoiceCommands : MonoBehaviour {
 		} else {
 			speed *= 0.66f;
 		}
+	}
+
+	void Stop() {
+		transform.localScale = Vector3.MoveTowards (transform.localScale, transform.localScale, 0);
+		transform.position = Vector3.MoveTowards (transform.position, transform.position, 0);
+		transform.RotateAround (transform.position, Vector3.up, 0);
+		transform.RotateAround (transform.position, Vector3.right, 0);
 	}
 }
